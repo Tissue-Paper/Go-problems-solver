@@ -8,13 +8,13 @@
 #include <ctype.h>
 
 #define B_SIZE    13
-#define WIDTH   (B_SIZE + 2)
+#define WIDTH     (B_SIZE + 2)
 #define BOARD_MAX (WIDTH * WIDTH)
-#define KOUHO   21
+#define KOUHO     21
 
-enum { SPACE, BLACK, WHITE, OUT };
-enum { DEAD = 1, ALIVE };
-enum { NOT_EYE, MAYBE_EYE_1, MAYBE_EYE_2, PARFECT_EYE, TWO_EYES };
+enum {SPACE, BLACK, WHITE, OUT};
+enum {DEAD = 1, ALIVE};
+enum {NOT_EYE, MAYBE_EYE_1, MAYBE_EYE_2, PARFECT_EYE, TWO_EYES};
 
 int board[BOARD_MAX], researched[BOARD_MAX], researched_stone[BOARD_MAX];
 int place_riberty[BOARD_MAX], place_atari[BOARD_MAX];
@@ -116,7 +116,7 @@ void init_hashcode() {
   int i;
 
   for (i = 0; i < BOARD_MAX; i++) {
-       if (board[i] == BLACK) hashcode ^= hashboard[i][BLACK];
+    if (board[i] == BLACK)      hashcode ^= hashboard[i][BLACK];
     else if (board[i] == WHITE) hashcode ^= hashboard[i][WHITE];
   }
 }
@@ -135,7 +135,7 @@ int main() {
     if (turn == BLACK) answer();
 
     printf("座標を入力 >");
-    scanf("%d %d", &x, &y);
+    scanf("%d-%d", &x, &y);
 
     switch (put_stone(WIDTH*y + x, turn)) {
     case 1: print_board();  break;
@@ -165,7 +165,10 @@ void print_board() {
   int x, y, z;
 
   printf("\n  ");
-  for (x = 1; x <= B_SIZE; x++) { if (x == 10) printf(" "); printf("%2d", x); }
+  for (x = 1; x <= B_SIZE; x++) {
+    if (x == 10) printf(" ");
+    printf("%2d", x);
+  }
   printf("\n");
 
   for (y = 1; y <= B_SIZE; y++) {
@@ -251,7 +254,7 @@ int count_riberty(int z, int color, int first_time) {
   }
 
   researched[z] = 1;
-  researched_stone[z] = 1;  //atari関数用
+  researched_stone[z] = 1;  // atari関数用
   for (i = 0; i<4; i++) {
     new_z = z + dir4[i];
     if (researched[new_z]) continue;
@@ -340,8 +343,8 @@ int whether_its_eye(int z, int color) {
 int nigan_pro() {
   int i;
 
-  count_riberty(target_place[0], target_color, 1);  //ダメの座標の調査
-  for (i = 0; i<BOARD_MAX; i++) researched[i] = 0;  //調査済み配列の初期化
+  count_riberty(target_place[0], target_color, 1);  // ダメの座標の調査
+  for (i = 0; i<BOARD_MAX; i++) researched[i] = 0;  // 調査済み配列の初期化
   count_eye = 0;  // 眼の個数の初期化
 
   for (i = 0; place_riberty[i] != 0; i++) {
@@ -429,7 +432,8 @@ int whether_its_eye_pro(int z, int color) {
     break;
   }
 
-  for (i = 0; i<r; i++) {   //戻り値の個数分、比較を行う（この時、自身は必ず３種の眼のどれかであり、戻り値はそれにNOT_EYEが加わったものである）
+  // 戻り値の個数分、比較を行う（この時、自身は必ず３種の眼のどれかであり、戻り値はそれにNOT_EYEが加わったものである）
+  for (i = 0; i<r; i++) {
     if (ret_num[i] == NOT_EYE) continue;
     if (myself == MAYBE_EYE_1 && ret_num[i] == MAYBE_EYE_2) continue;
     if (myself == MAYBE_EYE_2 && (ret_num[i] == MAYBE_EYE_1 || ret_num[i] == MAYBE_EYE_2)) continue;
@@ -545,7 +549,7 @@ int sikatsu_play_out(int tekazu_in_whole, int *tekazu_in_func) {
       kifu_data[next_index] = choices_data[next_index][i];
       turn_data[next_index] = turn;
       ko_data[next_index] = ko_z;
-      memcpy(place_data[next_index], board, sizeof(board)); //打つ場所、手番、コウ情報、盤面の状態を記録し、
+      memcpy(place_data[next_index], board, sizeof(board)); // 打つ場所、手番、コウ情報、盤面の状態を記録し、
       hash_data[next_index] = hashcode;
       put_stone(choices_data[next_index][i], turn); // 着手を行う
       choices_data[next_index][i] = 0;              // 一度試したという事で、候補手を消す
@@ -566,21 +570,21 @@ int search_result(int tekazu_in_whole, int count) {
   func_count++;
   //printf( "これは%d代目のsearch_result関数。祖先手数は%d手\n", ++count, tekazu_in_whole ); print_board();
 
-  dead_or_alive = sikatsu_play_out(tekazu_in_whole, &tekazu_in_func); //勝った方が入る
+  dead_or_alive = sikatsu_play_out(tekazu_in_whole, &tekazu_in_func); // 勝った方が入る
 
   while (1) {
     for (; tekazu_in_func != 0; tekazu_in_func--) if (turn_data[tekazu_in_whole + tekazu_in_func] == 3 - dead_or_alive) break;
-    if (tekazu_in_func == 0) return dead_or_alive;    //関数内で上のレベルがなくなったのでreturn
+    if (tekazu_in_func == 0) return dead_or_alive;    // 関数内で上のレベルがなくなったのでreturn
 
     revel = tekazu_in_whole + tekazu_in_func;
-    for (i = 0; choices_data[revel][i] != 0; i++);    //そのレベルにおける候補手の数
+    for (i = 0; choices_data[revel][i] != 0; i++);    // そのレベルにおける候補手の数
 
     entrance = dead_or_alive;
     while (dead_or_alive == entrance) {
       if (i-- == 0) break;
       turn = turn_data[revel];
       ko_z = ko_data[revel];
-      memcpy(board, place_data[revel], sizeof(board));  //最後に選択できる局面に戻す
+      memcpy(board, place_data[revel], sizeof(board));  // 最後に選択できる局面に戻す
       hashcode = hash_data[revel];
 
       if (choices_data[revel][i] != 1) {
@@ -589,8 +593,8 @@ int search_result(int tekazu_in_whole, int count) {
       }
 
       put_stone(choices_data[revel][i], turn);
-      kifu_data[revel] = choices_data[revel][i];      //棋譜を変更する
-      dead_or_alive = search_result(revel, count);    //その場合の結果がどうなるかを確かめる
+      kifu_data[revel] = choices_data[revel][i];      // 棋譜を変更する
+      dead_or_alive = search_result(revel, count);    // その場合の結果がどうなるかを確かめる
     }
     tekazu_in_func--;
   }
@@ -680,7 +684,7 @@ int _z(int x, int y) {
 }
 
 
-void sikatsu_initialization3() {  //三目中手の形
+void sikatsu_initialization3() {  // 三目中手の形
   int haichi_b[20] = { _z(1,11), _z(2,11), _z(3,11), _z(4,11), _z(5,11), _z(5,12), _z(5,13) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,12), _z(4,12), _z(4,13) };
 
@@ -697,7 +701,7 @@ void sikatsu_initialization3() {  //三目中手の形
 }
 
 
-void sikatsu_initialization5() {  //五目中手
+void sikatsu_initialization5() {  // 五目中手
   int haichi_b[20] = { _z(1,10), _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(5,11), _z(5,12), _z(5,13) };
   int haichi_w[20] = { _z(1,11), _z(2,11), _z(3,11), _z(4,11), _z(4,12), _z(4,13), _z(1,12) };
 
@@ -714,7 +718,7 @@ void sikatsu_initialization5() {  //五目中手
 }
 
 
-void sikatsu_initialization10() { //一線にコスむ筋
+void sikatsu_initialization10() { // 一線にコスむ筋
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(6,12), _z(8,12) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(3,13) };
 
@@ -731,7 +735,7 @@ void sikatsu_initialization10() { //一線にコスむ筋
 }
 
 
-void sikatsu_initialization11() { //角に置いて切る形
+void sikatsu_initialization11() { // 角に置いて切る形
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(6,12), _z(8,12) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(5,12) };
 
@@ -748,7 +752,7 @@ void sikatsu_initialization11() { //角に置いて切る形
 }
 
 
-void sikatsu_initialization12() {   //三目の急所に置く形
+void sikatsu_initialization12() {  // 三目の急所に置く形
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(7,12), _z(8,11) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(6,12) };
 
@@ -765,7 +769,7 @@ void sikatsu_initialization12() {   //三目の急所に置く形
 }
 
 
-void sikatsu_initialization13() {   //辺の角に置く形
+void sikatsu_initialization13() {   // 辺の角に置く形
   int haichi_b[20] = { _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(7,10), _z(8,10), _z(9,10), _z(3,11), _z(9,11), _z(11,11), _z(3,12), _z(10,12) };
   int haichi_w[20] = { _z(4,11), _z(5,11), _z(6,11), _z(7,11), _z(8,11), _z(4,12), _z(8,12), _z(9,12), _z(3,13) };
 
@@ -782,7 +786,7 @@ void sikatsu_initialization13() {   //辺の角に置く形
 }
 
 
-void sikatsu_initialization14() {   //ホウリコんでオク形
+void sikatsu_initialization14() {   // ホウリコんでオク形
   int haichi_b[20] = { _z(2,1), _z(2,2), _z(3,3), _z(3,4), _z(4,4), _z(5,4), _z(6,4), _z(7,5), _z(8,5), _z(9,4), _z(9,3), _z(9,2), _z(9,1) };
   int haichi_w[20] = { _z(3,2), _z(4,1), _z(4,3), _z(5,3), _z(6,3), _z(7,4), _z(8,3), _z(8,2), _z(8,1) };
 
@@ -799,7 +803,7 @@ void sikatsu_initialization14() {   //ホウリコんでオク形
 }
 
 
-void sikatsu_initialization15() {   //切って逃げる形
+void sikatsu_initialization15() {   // 切って逃げる形
   int haichi_b[20] = { _z(3,2), _z(4,2), _z(3,3), _z(2,4), _z(2,5), _z(3,6), _z(3,7), _z(4,7), _z(5,7), _z(6,7), _z(7,7), _z(8,7), _z(8,6), _z(7,2), _z(8,3), _z(9,2), _z(9,4), _z(9,5) };
   int haichi_w[20] = { _z(5,2), _z(4,3), _z(6,3), _z(5,4), _z(3,4), _z(3,5), _z(4,6), _z(5,6), _z(6,6), _z(7,6), _z(8,4), _z(8,5) };
 
