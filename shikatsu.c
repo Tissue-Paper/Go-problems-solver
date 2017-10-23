@@ -8,9 +8,9 @@
 #include <ctype.h>
 
 #define B_SIZE    13
-#define WIDTH     (B_SIZE + 2)
+#define WIDTH   (B_SIZE + 2)
 #define BOARD_MAX (WIDTH * WIDTH)
-#define KOUHO     21
+#define KOUHO   21
 
 enum { SPACE, BLACK, WHITE, OUT };
 enum { DEAD = 1, ALIVE };
@@ -111,7 +111,8 @@ void make_hashboard() {
   }
 }
 
-void init_hashcode() {    //ç›¤é¢ã®çŠ¶æ…‹ã‚’ãƒãƒƒã‚·ãƒ¥ã‚³ãƒ¼ãƒ‰åŒ–ã™ã‚‹é–¢æ•°
+// ”Õ–Ê‚Ìó‘Ô‚ğƒnƒbƒVƒ…ƒR[ƒh‰»‚·‚éŠÖ”
+void init_hashcode() {
   int i;
 
   for (i = 0; i < BOARD_MAX; i++) {
@@ -133,21 +134,22 @@ int main() {
   while (1) {
     if (turn == BLACK) answer();
 
-    printf("åº§æ¨™ã‚’å…¥åŠ› >");
-    scanf("%d-%d", &x, &y);
+    printf("À•W‚ğ“ü—Í >");
+    scanf("%d %d", &x, &y);
 
     switch (put_stone(WIDTH*y + x, turn)) {
     case 1: print_board();  break;
-    case -1: printf("â€»æ—¢ã«çŸ³ãŒã‚ã‚‹ã®ã§æ‰“ã¦ã¾ã›ã‚“\n");   break;
-    case -2: printf("â€»ã‚³ã‚¦ãªã®ã§ã™ãã«å–ã‚Šè¿”ã›ã¾ã›ã‚“\n"); break;
-    case -3: printf("â€»ç€æ‰‹ç¦æ­¢ç‚¹ã§ã™\n");          break;
+    case -1: printf("¦Šù‚ÉÎ‚ª‚ ‚é‚Ì‚Å‘Å‚Ä‚Ü‚¹‚ñ\n");   break;
+    case -2: printf("¦ƒRƒE‚È‚Ì‚Å‚·‚®‚Éæ‚è•Ô‚¹‚Ü‚¹‚ñ\n"); break;
+    case -3: printf("¦’…è‹Ö~“_‚Å‚·\n");          break;
     }
   }
   return 0;
 }
 
 
-void board_initialization() {    //ç¢ç›¤é…åˆ—ã®åˆæœŸåŒ–ã‚’è¡Œã†é–¢æ•°
+// Œé”Õ”z—ñ‚Ì‰Šú‰»‚ğs‚¤ŠÖ”
+void board_initialization() {
   int x, y;
 
   for (y = 0; y<WIDTH; y++) {
@@ -171,55 +173,63 @@ void print_board() {
     for (x = 1; x <= B_SIZE; x++) {
       z = WIDTH * y + x;
       if (board[z] == 0)
-      if (x == 1 && y == 1)                printf("â”Œ");
-      else if (x == B_SIZE && y == 1)      printf("â”");
-      else if (x == 1 && y == B_SIZE)      printf("â””");
-      else if (x == B_SIZE && y == B_SIZE) printf("â”˜");
-      else if (x == 1)                     printf("â”œ");
-      else if (y == 1)                     printf("â”¬");
-      else if (x == B_SIZE)                printf("â”¤");
-      else if (y == B_SIZE)                printf("â”´");
-      else                                 printf("â”¼");
-      else if (board[z] == 1)              printf("â—‹");
-      else if (board[z] == 2)              printf("â—");
+        if (x == 1 && y == 1)                printf("„¡");
+        else if (x == B_SIZE && y == 1)      printf("„¢");
+        else if (x == 1 && y == B_SIZE)      printf("„¤");
+        else if (x == B_SIZE && y == B_SIZE) printf("„£");
+        else if (x == 1)                     printf("„¥");
+        else if (y == 1)                     printf("„¦");
+        else if (x == B_SIZE)                printf("„§");
+        else if (y == B_SIZE)                printf("„¨");
+        else                                 printf("„©");
+      else if (board[z] == 1)                printf("›");
+      else if (board[z] == 2)                printf("œ");
     }
     printf("\n");
   }
-  printf("ã‚¢ã‚²ãƒãƒ(é»’ï¼š%d  ç™½ï¼š%d)  ", prisoners[BLACK], prisoners[WHITE]);
+  printf("ƒAƒQƒnƒ}(•F%d  ”’F%d)  ", prisoners[BLACK], prisoners[WHITE]);
 }
 
 
-// ç€æ‰‹ã‚’è¡Œã†é–¢æ•°
+// ’…è‚ğs‚¤ŠÖ”
 int put_stone(int z, int color) {
   int prisoner = 0, liberty, possibility_of_ko = 1, provisional_ko_z, new_z, i;
 
-  //zãŒ1ãªã®ã§ãƒ‘ã‚¹
+  // z‚ª1‚È‚Ì‚ÅƒpƒX
   if (z == 1) {
     turn = 3 - turn;
     ko_z = 0;
     return 1;
   }
-  if (board[z] != SPACE) return -1; //æ—¢ã«çŸ³ãŒã‚ã‚‹ã®ã§æ‰“ã¦ãªã„
-  if (z == ko_z) return -2;         //ã‚³ã‚¦ãªã®ã§æ‰“ã¦ãªã„
+  if (board[z] != SPACE) return -1; // Šù‚ÉÎ‚ª‚ ‚é‚Ì‚Å‘Å‚Ä‚È‚¢
+  if (z == ko_z) return -2;         // ƒRƒE‚È‚Ì‚Å‘Å‚Ä‚È‚¢
 
-  board[z] = color;  //ä¸€æ™‚çš„ãªç€æ‰‹
+  board[z] = color; // ˆê“I‚È’…è
 
-  //ä¸Šä¸‹å·¦å³ã‚’æ¢ç´¢ã™ã‚‹
+  // ã‰º¶‰E‚ğ’Tõ‚·‚é
   for (i = 0; i<4; i++) {
     new_z = z + dir4[i];
-    if (board[new_z] == color) possibility_of_ko = 0; //ã‚‚ã—å‘³æ–¹ã®çŸ³ãªã‚‰ã€ã‚³ã‚¦ã®å¯èƒ½æ€§ãŒãªã„
-    else if (board[new_z] == 3 - color) {             //ã‚‚ã—ç›¸æ‰‹ã®çŸ³ãªã‚‰ã°
-      if (count_riberty(new_z, 3 - color, 1) == 0) {  //ãƒ€ãƒ¡ã®æ•°ã‚’æ•°ãˆã¦ã€ã‚‚ã—ãƒ€ãƒ¡ãŒãªã„ãªã‚‰
-        prisoner += take_stone(new_z, 3 - color, 1);  //çŸ³ã‚’å–ã‚Šé™¤ãå‡¦ç†ã‚’è¡Œã„ã€ãã®çŸ³æ•°ã‚’è¨˜éŒ²ã™ã‚‹
-        provisional_ko_z = new_z;                     //ã‚³ã‚¦ã‹ã‚‚ã—ã‚Œãªã„ã®ã§åº§æ¨™ã‚’ä¿å­˜
+    if (board[new_z] == color) possibility_of_ko = 0; // ‚à‚µ–¡•û‚ÌÎ‚È‚çAƒRƒE‚Ì‰Â”\«‚ª‚È‚¢
+    else if (board[new_z] == 3 - color) {             // ‚à‚µ‘Šè‚ÌÎ‚È‚ç‚Î
+      if (count_riberty(new_z, 3 - color, 1) == 0) {  // ƒ_ƒ‚Ì”‚ğ”‚¦‚ÄA‚à‚µƒ_ƒ‚ª‚È‚¢‚È‚ç
+        prisoner += take_stone(new_z, 3 - color, 1);  // Î‚ğæ‚èœ‚­ˆ—‚ğs‚¢A‚»‚ÌÎ”‚ğ‹L˜^‚·‚é
+        provisional_ko_z = new_z;                     // ƒRƒE‚©‚à‚µ‚ê‚È‚¢‚Ì‚ÅÀ•W‚ğ•Û‘¶
       }
     }
   }
 
   liberty = count_riberty(z, color, 1);
-  if (liberty == 0) { board[z] = SPACE; return -3; }    //ç€æ‰‹ç¦æ­¢ç‚¹ã ã£ãŸå ´åˆ
 
-  if (prisoner == 1 && possibility_of_ko && liberty == 1) ko_z = provisional_ko_z;  //ã‚³ã‚¦ã®å½¢ã®å ´åˆ
+  // ’…è‹Ö~“_‚¾‚Á‚½ê‡
+  if (liberty == 0) {
+    board[z] = SPACE;
+    return -3;
+  }
+
+  // ƒRƒE‚ÌŒ`‚Ìê‡
+  if (prisoner == 1 && possibility_of_ko && liberty == 1) {
+    ko_z = provisional_ko_z;
+  }
   else ko_z = 0;
 
   hashcode ^= hashboard[z][color];
@@ -230,7 +240,8 @@ int put_stone(int z, int color) {
 }
 
 
-int count_riberty(int z, int color, int first_time) {    //ãƒ€ãƒ¡ã®æ•°ã¨ãã®åº§æ¨™ã‚’è¨˜éŒ²ã—ã€ãã®å€‹æ•°ã‚’è¿”ã™é–¢æ•°
+// ƒ_ƒ‚Ì”‚Æ‚»‚ÌÀ•W‚ğ‹L˜^‚µA‚»‚ÌŒÂ”‚ğ•Ô‚·ŠÖ”
+int count_riberty(int z, int color, int first_time) {
   static int liberty;
   int new_z, i, j;
 
@@ -240,7 +251,7 @@ int count_riberty(int z, int color, int first_time) {    //ãƒ€ãƒ¡ã®æ•°ã¨ãã®
   }
 
   researched[z] = 1;
-  researched_stone[z] = 1;  //atarié–¢æ•°ç”¨
+  researched_stone[z] = 1;  //atariŠÖ”—p
   for (i = 0; i<4; i++) {
     new_z = z + dir4[i];
     if (researched[new_z]) continue;
@@ -256,7 +267,8 @@ int count_riberty(int z, int color, int first_time) {    //ãƒ€ãƒ¡ã®æ•°ã¨ãã®
 }
 
 
-int take_stone(int z, int color, int first_time) {  //çŸ³ã‚’å–ã‚Šé™¤ãã€ãã®å€‹æ•°ã‚’è¿”ã™é–¢æ•°
+// Î‚ğæ‚èœ‚«A‚»‚ÌŒÂ”‚ğ•Ô‚·ŠÖ”
+int take_stone(int z, int color, int first_time) {
   static int stone;
   int i;
 
@@ -270,7 +282,8 @@ int take_stone(int z, int color, int first_time) {  //çŸ³ã‚’å–ã‚Šé™¤ãã€ãã
 }
 
 
-int whether_existence() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ãŒã™ã¹ã¦å­˜åœ¨ã™ã‚‹ãªã‚‰1ã‚’ã€å–ã‚‰ã‚Œã¦ã„ãŸã‚‰0ã‚’è¿”ã™é–¢æ•°
+// €Šˆ”»’è‚Ì‘ÎÛ‚ª‚·‚×‚Ä‘¶İ‚·‚é‚È‚ç1‚ğAæ‚ç‚ê‚Ä‚¢‚½‚ç0‚ğ•Ô‚·ŠÖ”
+int whether_existence() {
   int i;
 
   for (i = 0; target_place[i] != 0; i++)
@@ -280,7 +293,8 @@ int whether_existence() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ãŒã™ã¹ã¦å­˜åœ¨ã™ã‚‹ãªã
 }
 
 
-int atari_target() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ãŒã‚¢ã‚¿ãƒªãªã‚‰1ã‚’ã€é•ã†ãªã‚‰0ã‚’è¿”ã™é–¢æ•°
+// €Šˆ”»’è‚Ì‘ÎÛ‚ªƒAƒ^ƒŠ‚È‚ç1‚ğAˆá‚¤‚È‚ç0‚ğ•Ô‚·ŠÖ”
+int atari_target() {
   int i;
 
   for (i = 0; target_place[i] != 0; i++)
@@ -290,21 +304,23 @@ int atari_target() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ãŒã‚¢ã‚¿ãƒªãªã‚‰1ã‚’ã€é•ã†ã
 }
 
 
-int atari() {    //ç›¤ä¸Šã«ã‚¢ã‚¿ãƒªã«ãªã£ã¦ã„ã‚‹ç›¸æ‰‹ã®çŸ³ãŒã‚ã‚Œã°ã€ãã®ãƒ€ãƒ¡åº§æ¨™ã‚’é…åˆ—ã«ä¿å­˜ã—ã€ãã®å€‹æ•°ã‚’è¿”ã™é–¢æ•°
+// ”Õã‚ÉƒAƒ^ƒŠ‚É‚È‚Á‚Ä‚¢‚é‘Šè‚ÌÎ‚ª‚ ‚ê‚ÎA‚»‚Ìƒ_ƒÀ•W‚ğ”z—ñ‚É•Û‘¶‚µA‚»‚ÌŒÂ”‚ğ•Ô‚·ŠÖ”
+int atari() {
   int z, i;
 
   for (i = 0; i<BOARD_MAX; i++) researched_stone[i] = place_atari[i] = 0;
 
   i = 0;
-  for (z = WIDTH * B_SIZE + B_SIZE; z > WIDTH; z--)       //ç¢ç›¤å³ä¸‹ã‹ã‚‰å·¦ä¸Šã®1-1ã¾ã§ã‚’èª¿ã¹ã‚‹
-    if (board[z] == 3 - turn && researched_stone[z] == 0) //ã‚‚ã—ãã“ãŒç›¸æ‰‹ã®çŸ³ã§ã‚ã‚Šã€ã‹ã¤ã€éèª¿æŸ»æ¸ˆã¿ã§ã‚ã‚‹ãªã‚‰
-      if (count_riberty(z, 3 - turn, 1) == 1) { place_atari[i++] = place_riberty[0]; }  //ãƒ€ãƒ¡ã®æ•°ã‚’æ•°ãˆã¦ã‚‚ã—ï¼‘ãªã‚‰ã°ã€ãã®åº§æ¨™ã‚’ place_atari é…åˆ—ã«è¿½åŠ ã™ã‚‹ã€‚
+  for (z = WIDTH * B_SIZE + B_SIZE; z > WIDTH; z--)       // Œé”Õ‰E‰º‚©‚ç¶ã‚Ì1-1‚Ü‚Å‚ğ’²‚×‚é
+    if (board[z] == 3 - turn && researched_stone[z] == 0) // ‚à‚µ‚»‚±‚ª‘Šè‚ÌÎ‚Å‚ ‚èA‚©‚ÂA”ñ’²¸Ï‚İ‚Å‚ ‚é‚È‚ç
+      if (count_riberty(z, 3 - turn, 1) == 1) place_atari[i++] = place_riberty[0]; // ƒ_ƒ‚Ì”‚ğ”‚¦‚Ä‚à‚µ‚P‚È‚ç‚ÎA‚»‚ÌÀ•W‚ğ place_atari ”z—ñ‚É’Ç‰Á‚·‚éB
 
   return i;
 }
 
 
-int whether_its_eye(int z, int color) {  //ãã“ãŒçœ¼ã§ã‚ã‚‹ã‹ã©ã†ã‹ã‚’è¿”ã™é–¢æ•°ï¼ˆç°¡æ˜“ï¼‰
+// ‚»‚±‚ªŠá‚Å‚ ‚é‚©‚Ç‚¤‚©‚ğ•Ô‚·ŠÖ”iŠÈˆÕ”Åj
+int whether_its_eye(int z, int color) {
   int i, new_z;
 
   for (i = 0; i < 4; i++) {
@@ -320,12 +336,13 @@ int whether_its_eye(int z, int color) {  //ãã“ãŒçœ¼ã§ã‚ã‚‹ã‹ã©ã†ã‹ã‚’è
 }
 
 
-int nigan_pro() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ã«å®Œå…¨ãªï¼’çœ¼ãŒã‚ã‚Œã°ï¼‘ã€ãªã‘ã‚Œã°ï¼ã‚’è¿”ã™é–¢æ•°
+// €Šˆ”»’è‚Ì‘ÎÛ‚ÉŠ®‘S‚È‚QŠá‚ª‚ ‚ê‚Î‚PA‚È‚¯‚ê‚Î‚O‚ğ•Ô‚·ŠÖ”
+int nigan_pro() {
   int i;
 
-  count_riberty(target_place[0], target_color, 1); //ãƒ€ãƒ¡ã®åº§æ¨™ã®èª¿æŸ»
-  for (i = 0; i<BOARD_MAX; i++) researched[i] = 0; //èª¿æŸ»æ¸ˆã¿é…åˆ—ã®åˆæœŸåŒ–
-  count_eye = 0;                                   //çœ¼ã®å€‹æ•°ã®åˆæœŸåŒ–
+  count_riberty(target_place[0], target_color, 1);  //ƒ_ƒ‚ÌÀ•W‚Ì’²¸
+  for (i = 0; i<BOARD_MAX; i++) researched[i] = 0;  //’²¸Ï‚İ”z—ñ‚Ì‰Šú‰»
+  count_eye = 0;  // Šá‚ÌŒÂ”‚Ì‰Šú‰»
 
   for (i = 0; place_riberty[i] != 0; i++) {
     if (researched[place_riberty[i]] == 0)
@@ -342,55 +359,60 @@ int nigan_pro() {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ã«å®Œå…¨ãªï¼’çœ¼ãŒã‚ã‚Œã°ï¼‘ã€
         if( ( ret_num[r++] = whether_its_eye_pro(new_z, color) ) == TWO_EYES ) return TWO_EYES; \
     } while( 0 )
 
-// ãã“ãŒçœ¼ã§ã‚ã‚‹ã‹ã©ã†ã‹ã‚’è¿”ã™é–¢æ•°ï¼ˆæœ¬æ ¼ï¼‰
+
+// ‚»‚±‚ªŠá‚Å‚ ‚é‚©‚Ç‚¤‚©‚ğ•Ô‚·ŠÖ”i–{Ši“Ij
 int whether_its_eye_pro(int z, int color) {
-  int each_number[4] = { 0 };       //ç©ºç‚¹ã€é»’çŸ³ã€ç™½çŸ³ã€ç›¤å¤–ã®æ•°
-  int next_z = 0, next_direction;   //éš£ã®åº§æ¨™ã¨æ–¹å‘
-  int location;                     //éš…ã€è¾ºã€ä¸­å¤®ã®ã©ã“ã§ã‚ã‚‹ã‹
-  int myself, ret_num[4] = { 0 };   //è‡ªåˆ†è‡ªèº«ã®æƒ…å ±ã¨ã€æˆ»ã‚Šå€¤ã‚’è¨˜éŒ²ã™ã‚‹
+  int each_number[4] = { 0 };       // ‹ó“_A•ÎA”’ÎA”ÕŠO‚Ì”
+  int next_z = 0, next_direction;   // —×‚ÌÀ•W‚Æ•ûŒü
+  int location;                     // ‹÷A•ÓA’†‰›‚Ì‚Ç‚±‚Å‚ ‚é‚©
+  int myself, ret_num[4] = { 0 };   // ©•ª©g‚Ìî•ñ‚ÆA–ß‚è’l‚ğ‹L˜^‚·‚é
   int new_z, i, r = 0;
 
   researched[z] = 1;
-  for (i = 0; i < 4; i++) {      //ä¸Šä¸‹å·¦å³ã«ã‚ã‚‹ã€å‘³æ–¹ã®çŸ³ã¨ç›¤å¤–ã®æ•°ã‚’æ•°ãˆã‚‹
+  // ã‰º¶‰E‚É‚ ‚éA–¡•û‚ÌÎ‚Æ”ÕŠO‚Ì”‚ğ”‚¦‚é
+  for (i = 0; i < 4; i++) {
     new_z = z + dir4[i];
     if (board[new_z] == color) each_number[color]++;
     else if (board[new_z] == OUT) each_number[OUT]++;
     else { next_z = new_z; next_direction = i; }
   }
 
-  if (each_number[color] + each_number[OUT] == 4) { //ãã®åˆè¨ˆãŒï¼”ã¤ãªã‚‰ã€å˜çœ¼ã®å¯èƒ½æ€§ã‚ã‚Š
+  // ‚»‚Ì‡Œv‚ª‚S‚Â‚È‚çA’PŠá‚Ì‰Â”\«‚ ‚è
+  if (each_number[color] + each_number[OUT] == 4) {
     each_number[color] = 0;
-    for (i = 0; i < 4; i++) naname(z + dir4_2[i]);  //æ–œã‚ï¼”æ–¹å‘ã‚’èª¿ã¹ã‚‹
+    for (i = 0; i < 4; i++) naname(z + dir4_2[i]);  // Î‚ß‚S•ûŒü‚ğ’²‚×‚é
 
     switch (each_number[OUT]) {
-    case 2:  location = 0; break;  //éš…ã§ã‚ã‚‹
-    case 1:  location = 1; break;  //è¾ºã§ã‚ã‚‹
-    case 0:  location = 2; break;  //ä¸­å¤®ã§ã‚ã‚‹
+    case 2: location = 0; break;  // ‹÷‚Å‚ ‚é
+    case 1: location = 1; break;  // •Ó‚Å‚ ‚é
+    case 0: location = 2; break;  // ’†‰›‚Å‚ ‚é
     }
-  }
-  else if (each_number[color] + each_number[OUT] == 3) {        //åˆè¨ˆãŒï¼“ã¤ãªã‚‰ã€è¤‡çœ¼ã®å¯èƒ½æ€§ã‚ã‚Š
+  // ‡Œv‚ª‚R‚Â‚È‚çA•¡Šá‚Ì‰Â”\«‚ ‚è
+  } else if (each_number[color] + each_number[OUT] == 3) {
     researched[next_z] = 1;
-    for (i = 0; i<4; i++) each_number[board[next_z + dir4[i]]]++;  //éš£ã‚’åŸºæº–ã«ã—ãŸä¸Šä¸‹å·¦å³ã‚‚èª¿ã¹ã‚‹
+    for (i = 0; i<4; i++) each_number[board[next_z + dir4[i]]]++; // —×‚ğŠî€‚É‚µ‚½ã‰º¶‰E‚à’²‚×‚é
     if (each_number[color] + each_number[OUT] != 6) return NOT_EYE;
 
     each_number[color] = 0;
-    switch (next_direction) {    //æ–œã‚ï¼”æ–¹å‘ã‚’èª¿ã¹ã‚‹ï¼ˆã©ã“ã«éš£ã®çŸ³ãŒã‚ã£ãŸã‹ã§å ´åˆåˆ†ã‘ï¼‰
-    case 0:  naname(z + dir4_2[2]);  naname(z + dir4_2[3]);  naname(next_z + dir4_2[0]);  naname(next_z + dir4_2[1]);  break;
-    case 1:  naname(z + dir4_2[0]);  naname(z + dir4_2[1]);  naname(next_z + dir4_2[2]);  naname(next_z + dir4_2[3]);  break;
-    case 2:  naname(z + dir4_2[1]);  naname(z + dir4_2[3]);  naname(next_z + dir4_2[0]);  naname(next_z + dir4_2[2]);  break;
-    case 3:  naname(z + dir4_2[0]);  naname(z + dir4_2[2]);  naname(next_z + dir4_2[1]);  naname(next_z + dir4_2[3]);  break;
+    switch (next_direction) {   // Î‚ß‚S•ûŒü‚ğ’²‚×‚éi‚Ç‚±‚É—×‚ÌÎ‚ª‚ ‚Á‚½‚©‚Åê‡•ª‚¯j
+    case 0: naname(z + dir4_2[2]);  naname(z + dir4_2[3]);  naname(next_z + dir4_2[0]); naname(next_z + dir4_2[1]); break;
+    case 1: naname(z + dir4_2[0]);  naname(z + dir4_2[1]);  naname(next_z + dir4_2[2]); naname(next_z + dir4_2[3]); break;
+    case 2: naname(z + dir4_2[1]);  naname(z + dir4_2[3]);  naname(next_z + dir4_2[0]); naname(next_z + dir4_2[2]); break;
+    case 3: naname(z + dir4_2[0]);  naname(z + dir4_2[2]);  naname(next_z + dir4_2[1]); naname(next_z + dir4_2[3]); break;
     }
 
     switch (each_number[OUT]) {
-    case 3:  location = 0; break; //éš…ã§ã‚ã‚‹
+    case 3: location = 0; break;  // ‹÷‚Å‚ ‚é
     case 2:
-    case 1: location = 1; break;  //è¾ºã§ã‚ã‚‹
-    case 0:  location = 2; break; //ä¸­å¤®ã§ã‚ã‚‹
+    case 1: location = 1; break;  // •Ó‚Å‚ ‚é
+    case 0: location = 2; break;  // ’†‰›‚Å‚ ‚é
     }
+  } else {
+    return NOT_EYE;
   }
-  else { return NOT_EYE; }
 
-  switch (location) {    //è‡ªèº«ã®çœ¼ã‚’è©•ä¾¡ï¼ˆéš…ã€è¾ºã€ä¸­å¤®ã§å ´åˆåˆ†ã‘ï¼‰
+  // ©g‚ÌŠá‚ğ•]‰¿i‹÷A•ÓA’†‰›‚Åê‡•ª‚¯j
+  switch (location) {
   case 0:
     if (each_number[color] == 1) { myself = PARFECT_EYE; if (++count_eye == 2) return TWO_EYES; }
     else if (each_number[color] == 0) { if (next_z == 0) myself = MAYBE_EYE_1; else myself = MAYBE_EYE_2; }
@@ -407,7 +429,7 @@ int whether_its_eye_pro(int z, int color) {
     break;
   }
 
-  for (i = 0; i<r; i++) {    //æˆ»ã‚Šå€¤ã®å€‹æ•°åˆ†ã€æ¯”è¼ƒã‚’è¡Œã†ï¼ˆã“ã®æ™‚ã€è‡ªèº«ã¯å¿…ãšï¼“ç¨®ã®çœ¼ã®ã©ã‚Œã‹ã§ã‚ã‚Šã€æˆ»ã‚Šå€¤ã¯ãã‚Œã«NOT_EYEãŒåŠ ã‚ã£ãŸã‚‚ã®ã§ã‚ã‚‹ï¼‰
+  for (i = 0; i<r; i++) {   //–ß‚è’l‚ÌŒÂ”•ªA”äŠr‚ğs‚¤i‚±‚ÌA©g‚Í•K‚¸‚Rí‚ÌŠá‚Ì‚Ç‚ê‚©‚Å‚ ‚èA–ß‚è’l‚Í‚»‚ê‚ÉNOT_EYE‚ª‰Á‚í‚Á‚½‚à‚Ì‚Å‚ ‚éj
     if (ret_num[i] == NOT_EYE) continue;
     if (myself == MAYBE_EYE_1 && ret_num[i] == MAYBE_EYE_2) continue;
     if (myself == MAYBE_EYE_2 && (ret_num[i] == MAYBE_EYE_1 || ret_num[i] == MAYBE_EYE_2)) continue;
@@ -418,7 +440,8 @@ int whether_its_eye_pro(int z, int color) {
 }
 
 
-int kyusyo(int z) {    //ä¸Šä¸‹å·¦å³ã«ã‚ã‚‹ã€target_stoneã¨OUTã®åˆè¨ˆæ•°ã‚’è¿”ã™
+// ã‰º¶‰E‚É‚ ‚éAtarget_stone‚ÆOUT‚Ì‡Œv”‚ğ•Ô‚·
+int kyusyo(int z) {
   int sum = 0, new_z, i;
 
   for (i = 0; i<4; i++) {
@@ -429,38 +452,45 @@ int kyusyo(int z) {    //ä¸Šä¸‹å·¦å³ã«ã‚ã‚‹ã€target_stoneã¨OUTã®åˆè¨ˆæ•°ã
 }
 
 
-int make_choices(int tekazu) {        //å€™è£œæ‰‹ãƒªã‚¹ãƒˆã®ä½œæˆã‚’è¡Œã†é–¢æ•°
+// Œó•âèƒŠƒXƒg‚Ìì¬‚ğs‚¤ŠÖ”
+int make_choices(int tekazu) {
   int coppy_canput[KOUHO], atari_no_kazu, z_index;
   int i, j, c;
 
-  atari_no_kazu = atari();                                  //ï¼¡é…åˆ—ï¼ˆã‚¢ã‚¿ãƒªåº§æ¨™ãƒªã‚¹ãƒˆï¼‰ã®ä½œæˆ
-  memcpy(coppy_canput, canput[turn], sizeof(coppy_canput)); //ï¼¢é…åˆ—ï¼ˆå€™è£œæ‰‹ãƒªã‚¹ãƒˆï¼‰ã®ã‚³ãƒ”ãƒ¼
-  for (i = 0; i<KOUHO; i++) choices_data[tekazu][i] = 0;    //ï¼£é…åˆ—ï¼ˆæœ€çµ‚çš„ãªå€™è£œæ‰‹ãƒªã‚¹ãƒˆï¼‰ã‚’0ã§åˆæœŸåŒ–
+  atari_no_kazu = atari();                                  // ‚`”z—ñiƒAƒ^ƒŠÀ•WƒŠƒXƒgj‚Ìì¬
+  memcpy(coppy_canput, canput[turn], sizeof(coppy_canput)); // ‚a”z—ñiŒó•âèƒŠƒXƒgj‚ÌƒRƒs[
+  for (i = 0; i<KOUHO; i++) choices_data[tekazu][i] = 0;    // ‚b”z—ñiÅI“I‚ÈŒó•âèƒŠƒXƒgj‚ğ0‚Å‰Šú‰»
 
-  for (i = 0; i<atari_no_kazu; i++)
-    for (j = 0; j<KOUHO; j++)
-      if (place_atari[i] == coppy_canput[j]) { coppy_canput[j] = 0; break; } //ï¼¡é…åˆ—ã¨é‡è¤‡ã™ã‚‹ï¼¢é…åˆ—ã®è¦ç´ ã‚’å‰Šé™¤
+  for (i = 0; i<atari_no_kazu; i++) {
+    for (j = 0; j<KOUHO; j++) {
+      if (place_atari[i] == coppy_canput[j]) {
+        coppy_canput[j] = 0;  // ‚`”z—ñ‚Æd•¡‚·‚é‚a”z—ñ‚Ì—v‘f‚ğíœ
+        break;
+      }
+    }
+  }
 
   c = 0;
-  if (turn == target_color) choices_data[tekazu][c++] = 1;    //ã‚‚ã—å¯¾è±¡çŸ³ã®æ‰‹ç•ªãªã‚‰ã€ãƒ‘ã‚¹ã‚’é¸æŠè‚¢ã«è¿½åŠ ã™ã‚‹
+  // ‚à‚µ‘ÎÛÎ‚Ìè”Ô‚È‚çAƒpƒX‚ğ‘I‘ğˆ‚É’Ç‰Á‚·‚é
+  if (turn == target_color) choices_data[tekazu][c++] = 1;
 
-  //ï¼¢é…åˆ—ã®è¦ç´ ã‚’ï¼‘ã¤ãšã¤èª¿ã¹ã‚‹
-  for (i = 0; i<KOUHO; i++) {
+  for (i = 0; i<KOUHO; i++) {       // ‚a”z—ñ‚Ì—v‘f‚ğ‚P‚Â‚¸‚Â’²‚×‚é
     z_index = coppy_canput[i];
-    if (board[z_index] == SPACE) {               //ãã®åœ°ç‚¹ãŒç©ºç‚¹ãªã‚‰
-      board[z_index] = turn;                     //ãŸã‚ã—ã«çŸ³ã‚’ç½®ã„ã¦ã¿ã¦
-      switch (count_riberty(z_index, turn, 1)) { //ãƒ€ãƒ¡ã®æ•°ã‚’æ•°ãˆã‚‹
+    if (board[z_index] == SPACE) {  // ‚»‚Ì’n“_‚ª‹ó“_‚È‚ç
+      board[z_index] = turn;                      // ‚½‚ß‚µ‚ÉÎ‚ğ’u‚¢‚Ä‚İ‚Ä
+      switch (count_riberty(z_index, turn, 1)) {  // ƒ_ƒ‚Ì”‚ğ”‚¦‚é
       case 0:
-        coppy_canput[i] = 0;                  //ã‚‚ã—0ãªã‚‰ç€æ‰‹ç¦æ­¢ç‚¹ãªã®ã§å‰Šé™¤
+        coppy_canput[i] = 0;                      // ‚à‚µ0‚È‚ç’…è‹Ö~“_‚È‚Ì‚Åíœ
         break;
       case 1:
-        choices_data[tekazu][c++] = z_index;  //ã‚‚ã—1ãªã‚‰ï¼£é…åˆ—ã®å…ˆé ­ã«å…¥ã‚Œã‚‹ã€‚
-        coppy_canput[i] = 0;                  //å¾Œã‚ã‹ã‚‰èª¿ã¹ã¦ã„ã‘ã°ã€é †ç•ªã‚’å¾Œå›ã—ã«ã§ãã‚‹ã€‚
+        choices_data[tekazu][c++] = z_index;      // ‚à‚µ1‚È‚ç‚b”z—ñ‚Ìæ“ª‚É“ü‚ê‚éB
+        coppy_canput[i] = 0;                      // Œã‚ë‚©‚ç’²‚×‚Ä‚¢‚¯‚ÎA‡”Ô‚ğŒã‰ñ‚µ‚É‚Å‚«‚éB
         break;
       }
       board[z_index] = SPACE;
+    } else {
+      coppy_canput[i] = 0; // ‚»‚Ì’n“_‚ÉŠù‚ÉÎ‚ª‚ ‚é‚È‚çA’…è‚Å‚«‚È‚¢‚Ì‚Åíœ
     }
-    else { coppy_canput[i] = 0; }      //ãã®åœ°ç‚¹ã«æ—¢ã«çŸ³ãŒã‚ã‚‹ãªã‚‰ã€ç€æ‰‹ã§ããªã„ã®ã§å‰Šé™¤
   }
 
   if (turn != target_color) {
@@ -472,41 +502,41 @@ int make_choices(int tekazu) {        //å€™è£œæ‰‹ãƒªã‚¹ãƒˆã®ä½œæˆã‚’è¡Œã†é–¢æ
     }
   }
 
-  //ï¼¢é…åˆ—ã®è¦ç´ ã‚’ã€kyusyoé–¢æ•°ã®æˆ»ã‚Šå€¤ãŒå¤§ãã„é †ã«ã€ï¼£é…åˆ—ã«ç§»ã™
-  for (i = 4; i>-1; i--)
+  for (i = 4; i>-1; i--)          // ‚a”z—ñ‚Ì—v‘f‚ğAkyusyoŠÖ”‚Ì–ß‚è’l‚ª‘å‚«‚¢‡‚ÉA‚b”z—ñ‚ÉˆÚ‚·
     for (j = 0; j<KOUHO; j++)
       if (coppy_canput[j] != 0 && kyusyo(coppy_canput[j]) == i)
         choices_data[tekazu][c++] = coppy_canput[j];
 
-  for (i = 0; i<atari_no_kazu; i++) if (place_atari[i] != ko_z)  //ã‚³ã‚¦ã®å–ã‚Šè¿”ã—ã§ã¯ãªã„ï¼¡é…åˆ—ã®è¦ç´ ã‚’ã€ï¼£é…åˆ—ã«ç§»ã™
+  for (i = 0; i<atari_no_kazu; i++) if (place_atari[i] != ko_z) // ƒRƒE‚Ìæ‚è•Ô‚µ‚Å‚Í‚È‚¢‚`”z—ñ‚Ì—v‘f‚ğA‚b”z—ñ‚ÉˆÚ‚·
     choices_data[tekazu][c++] = place_atari[i];
 
-  return c;    //æœ€çµ‚çš„ã«ï¼£é…åˆ—ã«æ ¼ç´ã•ã‚ŒãŸè¦ç´ ã®å€‹æ•°ã‚’è¿”ã™
+  return c;   // ÅI“I‚É‚b”z—ñ‚ÉŠi”[‚³‚ê‚½—v‘f‚ÌŒÂ”‚ğ•Ô‚·
 }
 
 
-int sikatsu_play_out(int tekazu_in_whole, int *tekazu_in_func) {  //æ­»æ´»ã®ãƒ—ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’è¡Œã†é–¢æ•°
+// €Šˆ‚ÌƒvƒŒƒCƒAƒEƒg‚ğs‚¤ŠÖ”
+int sikatsu_play_out(int tekazu_in_whole, int *tekazu_in_func) {
   int next_index, i;
 
-  next_index = tekazu_in_whole + *tekazu_in_func + 1;    //ã“ã‚Œã‹ã‚‰æ‰“ã¨ã†ã¨ã—ã¦ã„ã‚‹æ‰‹æ•°ï¼ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ï¼‰
+  next_index = tekazu_in_whole + *tekazu_in_func + 1;   // ‚±‚ê‚©‚ç‘Å‚Æ‚¤‚Æ‚µ‚Ä‚¢‚éè”iƒCƒ“ƒfƒbƒNƒXj
 
-  while (whether_existence()) {    //æ­»æ´»åˆ¤å®šã®å¯¾è±¡ãŒå­˜åœ¨ã™ã‚‹é–“ã€ç™½ã¨é»’ãŒäº¤äº’ã«ç€æ‰‹ã™ã‚‹
+  while (whether_existence()) {   // €Šˆ”»’è‚Ì‘ÎÛ‚ª‘¶İ‚·‚éŠÔA”’‚Æ•‚ªŒğŒİ‚É’…è‚·‚é
     if (turn == 3 - target_color) {
-      if (atari_target() != 0) return DEAD; //å¯¾è±¡ãŒã‚¢ã‚¿ãƒªãªã‚‰ã°ã€DEADã‚’return
-      if (nigan_pro()) return ALIVE;        //å¯¾è±¡ã«ï¼’çœ¼ãŒã‚ã‚Œã°ã€ALIVEã‚’return
+      if (atari_target() != 0) return DEAD; // ‘ÎÛ‚ªƒAƒ^ƒŠ‚È‚ç‚ÎADEAD‚ğreturn
+      if (nigan_pro()) return ALIVE;        // ‘ÎÛ‚É‚QŠá‚ª‚ ‚ê‚ÎAALIVE‚ğreturn
     }
 
-    i = make_choices(next_index);                         //å€™è£œæ‰‹ãƒªã‚¹ãƒˆã®ä½œæˆ
-    while (1) {                                           //å€™è£œã‹ã‚‰æ‰“ã¦ã‚‹æ‰‹ã‚’æ¢ã™
-      if (i-- == 0) {                                     //æ‰“ã¦ã‚‹å ´æ‰€ãŒãªã‹ã£ãŸã‚‰ãƒ‘ã‚¹
-        if (kifu_data[next_index - 1] == 1) return ALIVE; //ãƒ‘ã‚¹ãŒï¼’å›ç¶šã„ãŸã‚‰return
+    i = make_choices(next_index);                         // Œó•âèƒŠƒXƒg‚Ìì¬
+    while (1) {                                           // Œó•â‚©‚ç‘Å‚Ä‚éè‚ğ’T‚·
+      if (i-- == 0) {                                     // ‘Å‚Ä‚éêŠ‚ª‚È‚©‚Á‚½‚çƒpƒX
+        if (kifu_data[next_index - 1] == 1) return ALIVE; // ƒpƒX‚ª‚Q‰ñ‘±‚¢‚½‚çreturn
         put_stone(1, turn);
         break;
       }
 
       if (choices_data[next_index][i] != 1) {
-        if (check_repeat_2(next_index, choices_data[next_index][i]) ||                  //åŒä¸€æ‰‹ã®åå¾©ã§ã¯ãªã„ã‹
-          turn == target_color && whether_its_eye(choices_data[next_index][i], turn)) { //çœ¼ã‚’ã¤ã¶ã™æ‰‹ã§ã¯ãªã„ã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯
+        if (check_repeat_2(next_index, choices_data[next_index][i]) ||                  // “¯ˆêè‚Ì”½•œ‚Å‚Í‚È‚¢‚©
+          turn == target_color && whether_its_eye(choices_data[next_index][i], turn)) { // Šá‚ğ‚Â‚Ô‚·è‚Å‚Í‚È‚¢‚©‚Ç‚¤‚©‚Ìƒ`ƒFƒbƒN
           choices_data[next_index][i] = 0;
           continue;
         }
@@ -515,11 +545,11 @@ int sikatsu_play_out(int tekazu_in_whole, int *tekazu_in_func) {  //æ­»æ´»ã®ãƒ—
       kifu_data[next_index] = choices_data[next_index][i];
       turn_data[next_index] = turn;
       ko_data[next_index] = ko_z;
-      memcpy(place_data[next_index], board, sizeof(board));  //æ‰“ã¤å ´æ‰€ã€æ‰‹ç•ªã€ã‚³ã‚¦æƒ…å ±ã€ç›¤é¢ã®çŠ¶æ…‹ã‚’è¨˜éŒ²ã—ã€
+      memcpy(place_data[next_index], board, sizeof(board)); //‘Å‚ÂêŠAè”ÔAƒRƒEî•ñA”Õ–Ê‚Ìó‘Ô‚ğ‹L˜^‚µA
       hash_data[next_index] = hashcode;
-      put_stone(choices_data[next_index][i], turn); //ç€æ‰‹ã‚’è¡Œã†
-      choices_data[next_index][i] = 0;              //ä¸€åº¦è©¦ã—ãŸã¨ã„ã†äº‹ã§ã€å€™è£œæ‰‹ã‚’æ¶ˆã™
-      (*tekazu_in_func)++; next_index++;            //æ‰‹æ•°ã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+      put_stone(choices_data[next_index][i], turn); // ’…è‚ğs‚¤
+      choices_data[next_index][i] = 0;              // ˆê“x‚µ‚½‚Æ‚¢‚¤–‚ÅAŒó•âè‚ğÁ‚·
+      (*tekazu_in_func)++; next_index++;            // è”‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
       //print_board();
       break;
     }
@@ -528,28 +558,29 @@ int sikatsu_play_out(int tekazu_in_whole, int *tekazu_in_func) {  //æ­»æ´»ã®ãƒ—
 }
 
 
-int search_result(int tekazu_in_whole, int count) {      //æœ¨æ¢ç´¢ã‚’è¡Œã†é–¢æ•°
+// –Ø’Tõ‚ğs‚¤ŠÖ”
+int search_result(int tekazu_in_whole, int count) {
   int dead_or_alive, entrance, tekazu_in_func = 0, revel;
   int i;
 
   func_count++;
-  //printf( "ã“ã‚Œã¯%dä»£ç›®ã®search_resulté–¢æ•°ã€‚ç¥–å…ˆæ‰‹æ•°ã¯%dæ‰‹\n", ++count, tekazu_in_whole ); print_board();
+  //printf( "‚±‚ê‚Í%d‘ã–Ú‚Ìsearch_resultŠÖ”B‘cæè”‚Í%dè\n", ++count, tekazu_in_whole ); print_board();
 
-  dead_or_alive = sikatsu_play_out(tekazu_in_whole, &tekazu_in_func);  //å‹ã£ãŸæ–¹ãŒå…¥ã‚‹
+  dead_or_alive = sikatsu_play_out(tekazu_in_whole, &tekazu_in_func); //Ÿ‚Á‚½•û‚ª“ü‚é
 
   while (1) {
     for (; tekazu_in_func != 0; tekazu_in_func--) if (turn_data[tekazu_in_whole + tekazu_in_func] == 3 - dead_or_alive) break;
-    if (tekazu_in_func == 0) return dead_or_alive;    //é–¢æ•°å†…ã§ä¸Šã®ãƒ¬ãƒ™ãƒ«ãŒãªããªã£ãŸã®ã§return
+    if (tekazu_in_func == 0) return dead_or_alive;    //ŠÖ”“à‚Åã‚ÌƒŒƒxƒ‹‚ª‚È‚­‚È‚Á‚½‚Ì‚Åreturn
 
     revel = tekazu_in_whole + tekazu_in_func;
-    for (i = 0; choices_data[revel][i] != 0; i++);    //ãã®ãƒ¬ãƒ™ãƒ«ã«ãŠã‘ã‚‹å€™è£œæ‰‹ã®æ•°
+    for (i = 0; choices_data[revel][i] != 0; i++);    //‚»‚ÌƒŒƒxƒ‹‚É‚¨‚¯‚éŒó•âè‚Ì”
 
     entrance = dead_or_alive;
     while (dead_or_alive == entrance) {
       if (i-- == 0) break;
       turn = turn_data[revel];
       ko_z = ko_data[revel];
-      memcpy(board, place_data[revel], sizeof(board));  //æœ€å¾Œã«é¸æŠã§ãã‚‹å±€é¢ã«æˆ»ã™
+      memcpy(board, place_data[revel], sizeof(board));  //ÅŒã‚É‘I‘ğ‚Å‚«‚é‹Ç–Ê‚É–ß‚·
       hashcode = hash_data[revel];
 
       if (choices_data[revel][i] != 1) {
@@ -558,15 +589,16 @@ int search_result(int tekazu_in_whole, int count) {      //æœ¨æ¢ç´¢ã‚’è¡Œã†é–¢
       }
 
       put_stone(choices_data[revel][i], turn);
-      kifu_data[revel] = choices_data[revel][i];      //æ£‹è­œã‚’å¤‰æ›´ã™ã‚‹
-      dead_or_alive = search_result(revel, count);    //ãã®å ´åˆã®çµæœãŒã©ã†ãªã‚‹ã‹ã‚’ç¢ºã‹ã‚ã‚‹
+      kifu_data[revel] = choices_data[revel][i];      //Šû•ˆ‚ğ•ÏX‚·‚é
+      dead_or_alive = search_result(revel, count);    //‚»‚Ìê‡‚ÌŒ‹‰Ê‚ª‚Ç‚¤‚È‚é‚©‚ğŠm‚©‚ß‚é
     }
     tekazu_in_func--;
   }
 }
 
 
-int check_repeat(int revel) {    //åŒã˜å±€é¢ã‚’ç¹°ã‚Šè¿”ã—ã¦ã„ãªã„ã‹ç¢ºèªã™ã‚‹é–¢æ•°
+// “¯‚¶‹Ç–Ê‚ğŒJ‚è•Ô‚µ‚Ä‚¢‚È‚¢‚©Šm”F‚·‚éŠÖ”
+int check_repeat(int revel) {
   int i;
 
   for (i = 1; i < revel; i++)
@@ -576,7 +608,8 @@ int check_repeat(int revel) {    //åŒã˜å±€é¢ã‚’ç¹°ã‚Šè¿”ã—ã¦ã„ãªã„ã‹ç¢º
 }
 
 
-int check_repeat_2(int revel, int wish_z) {    //åŒä¸€ã®å±€é¢ã§ã€åŒä¸€ã®æ‰‹ã‚’æ‰“ã¨ã†ã¨ã—ã¦ã„ãªã„ã‹ç¢ºèªã™ã‚‹é–¢æ•°
+// “¯ˆê‚Ì‹Ç–Ê‚ÅA“¯ˆê‚Ìè‚ğ‘Å‚Æ‚¤‚Æ‚µ‚Ä‚¢‚È‚¢‚©Šm”F‚·‚éŠÖ”
+int check_repeat_2(int revel, int wish_z) {
   int i;
 
   for (i = revel - 1; i > 0; i--)
@@ -614,29 +647,29 @@ void answer() {
     memcpy(board, coppy_arr, sizeof(board));
     turn = BLACK;
     if (put_stone(canput[BLACK][i], BLACK) == 1) {
-      printf("\n%5såœ°ç‚¹ã®æ¢ç´¢ã‚’é–‹å§‹...", z_to_xy(canput[BLACK][i]));
+      printf("\n%5s’n“_‚Ì’Tõ‚ğŠJn...", z_to_xy(canput[BLACK][i]));
       if (search_result(0, 0) == DEAD)  can_kill[k++] = canput[BLACK][i];
-      printf("æ¢ç´¢çµ‚äº†(å¤‰åŒ–æ•°=%7d)", func_count);
+      printf("’TõI—¹(•Ï‰»”=%7d)", func_count);
       henkasu += func_count;
     }
   }
   end = clock();
   time = (end - start) / CLOCKS_PER_SEC;
-  printf("  ç·å¤‰åŒ–æ•°=%d  æ™‚é–“=%.2f\n", henkasu, time);
+  printf("  ‘•Ï‰»”=%d  ŠÔ=%.2f\n", henkasu, time);
 
   memcpy(board, coppy_arr, sizeof(board));
   turn = BLACK;
 
   if (k == 0) {
-    printf("ç­”ãˆã‚’è¦‹ã¤ã‘ã‚‹ã“ã¨ãŒã§ãã¾ã›ã‚“ã§ã—ãŸ\n");
+    printf("“š‚¦‚ğŒ©‚Â‚¯‚é‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½\n");
   }
   else if (k == 1) {
-    printf("ã“ã®å±€é¢ã¯é»’ç•ªãªã‚‰ã€%sã«æ‰“ã¤ä¸€æ‰‹ã§ã™ã€‚\n", z_to_xy(can_kill[0]));
+    printf("‚±‚Ì‹Ç–Ê‚Í•”Ô‚È‚çA%s‚É‘Å‚Âˆêè‚Å‚·B\n", z_to_xy(can_kill[0]));
   }
   else {
-    printf("ã“ã®å±€é¢ã¯è¤‡æ•°ã®æ®ºã—æ–¹ãŒã‚ã‚Šã¾ã™ï¼ˆ");
+    printf("‚±‚Ì‹Ç–Ê‚Í•¡”‚ÌE‚µ•û‚ª‚ ‚è‚Ü‚·i");
     for (i = 0; i<k; i++) printf(" %s ", z_to_xy(can_kill[i]));
-    printf("ï¼‰\n");
+    printf("j\n");
   }
   print_board();
 }
@@ -647,7 +680,7 @@ int _z(int x, int y) {
 }
 
 
-void sikatsu_initialization3() {  //ä¸‰ç›®ä¸­æ‰‹ã®å½¢
+void sikatsu_initialization3() {  //O–Ú’†è‚ÌŒ`
   int haichi_b[20] = { _z(1,11), _z(2,11), _z(3,11), _z(4,11), _z(5,11), _z(5,12), _z(5,13) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,12), _z(4,12), _z(4,13) };
 
@@ -664,7 +697,7 @@ void sikatsu_initialization3() {  //ä¸‰ç›®ä¸­æ‰‹ã®å½¢
 }
 
 
-void sikatsu_initialization5() {  //äº”ç›®ä¸­æ‰‹
+void sikatsu_initialization5() {  //ŒÜ–Ú’†è
   int haichi_b[20] = { _z(1,10), _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(5,11), _z(5,12), _z(5,13) };
   int haichi_w[20] = { _z(1,11), _z(2,11), _z(3,11), _z(4,11), _z(4,12), _z(4,13), _z(1,12) };
 
@@ -681,7 +714,7 @@ void sikatsu_initialization5() {  //äº”ç›®ä¸­æ‰‹
 }
 
 
-void sikatsu_initialization10() {  //ä¸€ç·šã«ã‚³ã‚¹ã‚€ç­‹
+void sikatsu_initialization10() { //ˆêü‚ÉƒRƒX‚Ş‹Ø
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(6,12), _z(8,12) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(3,13) };
 
@@ -698,7 +731,7 @@ void sikatsu_initialization10() {  //ä¸€ç·šã«ã‚³ã‚¹ã‚€ç­‹
 }
 
 
-void sikatsu_initialization11() {  //è§’ã«ç½®ã„ã¦åˆ‡ã‚‹å½¢
+void sikatsu_initialization11() { //Šp‚É’u‚¢‚ÄØ‚éŒ`
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(6,12), _z(8,12) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(5,12) };
 
@@ -715,7 +748,7 @@ void sikatsu_initialization11() {  //è§’ã«ç½®ã„ã¦åˆ‡ã‚‹å½¢
 }
 
 
-void sikatsu_initialization12() {    //ä¸‰ç›®ã®æ€¥æ‰€ã«ç½®ãå½¢
+void sikatsu_initialization12() {   //O–Ú‚Ì‹}Š‚É’u‚­Œ`
   int haichi_b[20] = { _z(2,10), _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(2,11), _z(6,11), _z(7,12), _z(8,11) };
   int haichi_w[20] = { _z(1,12), _z(2,12), _z(3,11), _z(4,11), _z(5,11), _z(6,12) };
 
@@ -732,7 +765,7 @@ void sikatsu_initialization12() {    //ä¸‰ç›®ã®æ€¥æ‰€ã«ç½®ãå½¢
 }
 
 
-void sikatsu_initialization13() {    //è¾ºã®è§’ã«ç½®ãå½¢
+void sikatsu_initialization13() {   //•Ó‚ÌŠp‚É’u‚­Œ`
   int haichi_b[20] = { _z(3,10), _z(4,10), _z(5,10), _z(6,10), _z(7,10), _z(8,10), _z(9,10), _z(3,11), _z(9,11), _z(11,11), _z(3,12), _z(10,12) };
   int haichi_w[20] = { _z(4,11), _z(5,11), _z(6,11), _z(7,11), _z(8,11), _z(4,12), _z(8,12), _z(9,12), _z(3,13) };
 
@@ -749,7 +782,7 @@ void sikatsu_initialization13() {    //è¾ºã®è§’ã«ç½®ãå½¢
 }
 
 
-void sikatsu_initialization14() {    //ãƒ›ã‚¦ãƒªã‚³ã‚“ã§ã‚ªã‚¯å½¢
+void sikatsu_initialization14() {   //ƒzƒEƒŠƒR‚ñ‚ÅƒIƒNŒ`
   int haichi_b[20] = { _z(2,1), _z(2,2), _z(3,3), _z(3,4), _z(4,4), _z(5,4), _z(6,4), _z(7,5), _z(8,5), _z(9,4), _z(9,3), _z(9,2), _z(9,1) };
   int haichi_w[20] = { _z(3,2), _z(4,1), _z(4,3), _z(5,3), _z(6,3), _z(7,4), _z(8,3), _z(8,2), _z(8,1) };
 
@@ -766,7 +799,7 @@ void sikatsu_initialization14() {    //ãƒ›ã‚¦ãƒªã‚³ã‚“ã§ã‚ªã‚¯å½¢
 }
 
 
-void sikatsu_initialization15() {    //åˆ‡ã£ã¦é€ƒã’ã‚‹å½¢
+void sikatsu_initialization15() {   //Ø‚Á‚Ä“¦‚°‚éŒ`
   int haichi_b[20] = { _z(3,2), _z(4,2), _z(3,3), _z(2,4), _z(2,5), _z(3,6), _z(3,7), _z(4,7), _z(5,7), _z(6,7), _z(7,7), _z(8,7), _z(8,6), _z(7,2), _z(8,3), _z(9,2), _z(9,4), _z(9,5) };
   int haichi_w[20] = { _z(5,2), _z(4,3), _z(6,3), _z(5,4), _z(3,4), _z(3,5), _z(4,6), _z(5,6), _z(6,6), _z(7,6), _z(8,4), _z(8,5) };
 
